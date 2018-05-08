@@ -57,7 +57,7 @@ bool Lua::RunFile(const wchar_t* path)
     fread(&magic, 4, 1, fh);
 
     // is it a compiled file
-    if (magic == 0x1b4c7561)
+    if (magic != 0x1b4c7561)
     {
         // if not, reopen in text mode
         fclose(fh);
