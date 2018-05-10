@@ -34,7 +34,10 @@ workspace "FC5_CryHook"
     defines
     {
         "NOMINMAX",
-        "WIN32_LEAN_AND_MEAN"
+        "WIN32_LEAN_AND_MEAN",
+		"_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING",
+        "_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING"
+
     }
 
     includedirs

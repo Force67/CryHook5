@@ -67,3 +67,24 @@ public:
     char padding[80];
     IDXGIFactory *factory;
 };
+
+enum class SeekPosition : int32_t
+{
+    Cur = 0,
+    End = 1,
+    Start = 2
+};
+
+struct IFile
+{
+    virtual ~IFile() = default;
+
+    virtual uintptr_t* GetHirachyInfo() = 0;
+    virtual uint64_t Read(uint8_t* pOut, uint32_t uiSize) = 0;
+    virtual int32_t Write(uint8_t*, uint32_t uiSize) = 0;
+    virtual uint64_t Seek(int64_t iDelta, SeekPosition) = 0;
+    virtual uint64_t GetSize() = 0;
+    virtual int32_t Function006() = 0;
+    virtual uint64_t GetOffset() = 0;
+    virtual int32_t Flush() = 0;
+};

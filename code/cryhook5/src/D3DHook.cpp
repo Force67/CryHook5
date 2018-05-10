@@ -107,6 +107,7 @@ static nomad::base_function init([]()
 {
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    ImGui::SetNextWindowPos(ImVec2(10, 10));
 
     auto &io = ImGui::GetIO();
     io.IniFilename = nullptr;
