@@ -8,8 +8,6 @@ namespace gui
 {
     void RenderMenus();
     void RenderGenerics();
-
-    void ShowVisualError(const char*);
 }
 
 namespace input

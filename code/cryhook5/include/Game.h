@@ -2,17 +2,6 @@
 
 #include <Windows.h>
 
-class CScriptSystem
-{
-public:
-
-    char padding[0x38];
-    __int64* lua_state;
-
-    virtual ~CScriptSystem() = 0;
-    virtual char** GetTypeInfo() = 0;
-};
-
 class CDuniaEngine
 {
 public:
@@ -56,18 +45,6 @@ public:
 
 }; //Size=0x00E8
 
-// TODO : document better
-
-struct IDXGIFactory;
-
-class D3D_Class
-{
-public:
-
-    char padding[80];
-    IDXGIFactory *factory;
-};
-
 enum class SeekPosition : int32_t
 {
     Cur = 0,
@@ -79,7 +56,7 @@ struct IFile
 {
     virtual ~IFile() = default;
 
-    virtual uintptr_t* GetHirachyInfo() = 0;
+    virtual char** GetHirachyInfo() = 0;
     virtual uint64_t Read(uint8_t* pOut, uint32_t uiSize) = 0;
     virtual int32_t Write(uint8_t*, uint32_t uiSize) = 0;
     virtual uint64_t Seek(int64_t iDelta, SeekPosition) = 0;

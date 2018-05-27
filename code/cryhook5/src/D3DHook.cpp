@@ -19,6 +19,14 @@
 
 #include <Jitasm.h>
 
+class D3D_Class
+{
+public:
+
+    char padding[80];
+    IDXGIFactory *factory;
+};
+
 static D3D_Class *g_factory;
 static IDXGISwapChain **g_swapchain;
 

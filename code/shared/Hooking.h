@@ -195,12 +195,12 @@ namespace
 }
 
 template<typename T, typename TOrdinal>
-T iat(HMODULE base, const char* moduleName, T function, TOrdinal ordinal)
+T iat(const char* moduleName, T function, TOrdinal ordinal)
 {
 #ifdef _M_IX86
 	IMAGE_DOS_HEADER* imageHeader = (IMAGE_DOS_HEADER*)(baseAddressDifference + 0x400000);
 #elif defined(_M_AMD64)
-    IMAGE_DOS_HEADER* imageHeader = (IMAGE_DOS_HEADER*)base;
+    IMAGE_DOS_HEADER* imageHeader = (IMAGE_DOS_HEADER*)GetModuleHandle(L"FC_m64.dll");
 #endif
 	IMAGE_NT_HEADERS* ntHeader = getRVA<IMAGE_NT_HEADERS>(imageHeader->e_lfanew);
 
@@ -618,8 +618,8 @@ inline void put_ljump(AT address, T func)
 {
 	LPVOID funcStub = AllocateFunctionStub(get_func_ptr<T>::get(func));
 
-	write<uint8_t>(address, 0xE9);
-	write<int>((uintptr_t)address + 1, (intptr_t)funcStub- (intptr_t)get_adjusted(address) - 5);
+	writeVP<uint8_t>(address, 0xE9);
+	writeVP<int>((uintptr_t)address + 1, (intptr_t)funcStub- (intptr_t)get_adjusted(address) - 5);
 }
 
 template<typename T, typename AT>

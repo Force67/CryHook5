@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <LuaFunctions.h>
+#include <ScriptSystem.h>
 #include <CryHook5.h>
 
 #include <Utility/PathUtils.h>
@@ -19,8 +19,6 @@ static bool g_open = true;
 namespace gui
 {
     static char lua_buf[512] = {0};
-    static std::vector<const char*> g_errors;
-    static ImVec2 g_windowsize;
     static std::vector<std::string> g_scripts;
 
     void FindScripts()
@@ -64,9 +62,11 @@ namespace gui
             ImGui::NewLine();
             if (ImGui::Button("Execute"))
             {
-                if (!Lua::ExecuteLua(lua_buf))
+                auto scr = CScriptSystem::GetInstance();
+
+                if (!scr->ExecuteString(lua_buf, false))
                 {
-                    ShowVisualError("Failed to execute lua!\n");
+                    printf("[CryHook5] : Failed to execute lua!\n");
                 }
             }
         }
@@ -75,18 +75,20 @@ namespace gui
         {
             if (ImGui::Button("Reload all scripts"))
             {
-                Lua::LoadAllFiles();
+                FindScripts();
+
+                for (const auto &file : gui::g_scripts)
+                {
+                    Lua::RunFile(file.c_str());
+                }
             }
 
             static int current_item = 0;
             if (ImGui::ListBox("Load single\nscript", &current_item, ScriptItemSelector, &g_scripts, (int)g_scripts.size()))
             {
-                // yes i know its ugly but, imgui doesnt support wide strings
-                std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
-                auto dir = (Utility::GetAbsolutePathW()
-                    + L"scripts\\" 
-                    + converter.from_bytes(g_scripts[current_item])).
+                auto dir = (Utility::GetAbsolutePathA()
+                    + "scripts\\" 
+                    + g_scripts[current_item]).
                     c_str();
                 Lua::RunFile(dir);
             }
@@ -126,28 +128,6 @@ namespace gui
 
     void RenderGenerics()
     {
-        /* ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiSetCond_Always);
-         ImGui::Begin("Background", nullptr, g_windowsize, 0.f,
-                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove |
-                      ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
- 
-         ImGui::GetWindowDrawList()->AddText(
-             ImVec2(0.120f * g_windowsize.x, 0.150f * g_windowsize.y),
-             ImColor(0xFF, 0, 0xFF, 0xFF), "CAPTIEN !");
- 
-         for (size_t i = 0; i < g_errors.size(); i++)
-         {
-         //    ImGui::GetWindowDrawList()->AddText(
-         //        { g_windowsize.x - 300.0f, g_windowsize.y - 10.0f /*+ (i * 5.0f)},
-         //        ImColor(0xFF, 0xFF, 0, 0xFF), g_errors[i]);
-         }
- 
-         ImGui::End();*/
-    }
-
-    void ShowVisualError(const char* error)
-    {
-        g_errors.push_back(error);
     }
 }
 
