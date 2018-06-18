@@ -90,6 +90,7 @@ workspace "FC5_CryHook"
     group "Vendor"
 	include "vendor/minhook"
 	include "vendor/imgui"
+	--include "vendor/lua"
 
 	
 -- Cleanup

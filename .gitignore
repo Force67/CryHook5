@@ -2,6 +2,8 @@
 
 build
 
+code/vendor/lua
+
 code/cryhook5/src/InitPatches.cpp
 code/cryhook5/src/AssetOverrides.cpp
 

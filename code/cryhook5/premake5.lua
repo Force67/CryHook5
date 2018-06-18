@@ -16,12 +16,14 @@ project "CryHook5"
 	{
 		"../shared",
 		"./include",
+		--"../vendor/lua",
 		"../vendor/minhook",
 		"../vendor/imgui",
 	}
 
 	links
 	{
+		--"lua",
 		"minhook",
 		"imgui",
 		"Shared"

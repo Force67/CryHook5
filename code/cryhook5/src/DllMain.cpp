@@ -5,12 +5,19 @@
 */
 
 #include <Windows.h>
-#include <Nomad/nomad_base_function.h>
 #include <cstdio>
+
+#include <Nomad/nomad_event.h>
+#include <Nomad/nomad_base_function.h>
 
 #include <Hooking.h>
 
 #include <MinHook.h>
+
+namespace util
+{
+    nomad::nw_event<void> OnCHThreadProcess;
+}
 
 void OpenConsole()
 {
@@ -37,14 +44,21 @@ void OpenConsole()
     freopen("CONIN$", "r", stdin);
 }
 
-DWORD WINAPI ControlThread(LPVOID lpParam)
+DWORD WINAPI CH_Thread(LPVOID lpParam)
 {
     auto base = GetModuleHandle(L"FC_m64.dll");
 
     OpenConsole();
     MH_Initialize();
     nio::set_base((uintptr_t)base);
+
     nomad::base_function::run_all();
+
+    while (true)
+    {
+        Sleep(30);
+        util::OnCHThreadProcess();
+    }
 
     return 0;
 }
@@ -57,8 +71,10 @@ BOOL WINAPI DllMain(
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
+        MessageBoxA(0, "break!", 0, 0);
+
         // need thread context to call d3d create
-        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ControlThread, hinstDLL, NULL, NULL);
+        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)CH_Thread, hinstDLL, NULL, NULL);
         return true;
     }
 

@@ -17,11 +17,11 @@
 static FILE *g_file;
 static char *latestsub;
 
-static void(*lua_pushclosure_orig)(__int64*, Lua::lua_CFunction, int32_t);
+static void(*lua_pushclosure_orig)(__int64*, lua_CFunction, int32_t);
 static int(*func_pushstringthing)(__int64 *, __int64, const char *);
 static void(*lua_regnamespace)(const char*);
 
-static void lua_pushclosure_orig_hook(__int64 * a1, Lua::lua_CFunction a2, int32_t a3)
+static void lua_pushclosure_orig_hook(__int64 * a1, lua_CFunction a2, int32_t a3)
 {
     latestsub = (char*)a2;
 
@@ -70,8 +70,8 @@ static nomad::base_function init([]()
     MH_EnableHook(loc);
 
     loc = (char*)0x182E26300;
-    MH_CreateHook(loc, &sub_182E26300, (void**)&lua_regnamespace);
-    MH_EnableHook(loc);
+  //  MH_CreateHook(loc, &sub_182E26300, (void**)&lua_regnamespace);
+  //  MH_EnableHook(loc);
 
 });
 

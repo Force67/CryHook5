@@ -10,6 +10,7 @@
 #include <imgui.h>
 
 #include <CryHook5.h>
+#include <ScriptSystem.h>
 
 bool input::g_showmenu = false;
 
@@ -29,11 +30,20 @@ static CMouseStuff **g_mousestuff;
 
 static LRESULT GameWndProc_Hook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (msg == WM_KEYUP && wParam == VK_F8)
+    if (msg == WM_KEYUP)
     {
-        input::g_showmenu = !input::g_showmenu;
-        if (*g_mousestuff) (*g_mousestuff)->bDisableTracking = input::g_showmenu;
+        if (wParam == VK_F8)
+        {
+            input::g_showmenu = !input::g_showmenu;
+            if (*g_mousestuff) (*g_mousestuff)->bDisableTracking = input::g_showmenu;
+        }
+        else
+        {
+            int32_t copy = (int32_t)wParam;
+          //  Lua::TriggerEvent("OnInput", (char*)copy, 4);
+        }
     }
+
 
     if (input::g_showmenu)
     {

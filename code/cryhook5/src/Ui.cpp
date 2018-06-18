@@ -134,5 +134,11 @@ namespace gui
 static nomad::base_function init([]()
 {
     gui::FindScripts();
+
+    // objective indicator
+
     // gamestate flag 0x21D00005E73 = paused
+
+    //184D96590 + 16 = adduievent
+    //return (*(int(__fastcall **)(signed __int64, __int64 *))(v23E89161380 + 16i64))(2467611153280i64, (__int64 *)&v40);
 });
