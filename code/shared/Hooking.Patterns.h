@@ -116,6 +116,7 @@ namespace hook
 		inline pattern&& count(uint32_t expected) &&
 		{
 			EnsureMatches(expected);
+         //   printf("MATCHES : %d\n", m_matches.size());
 			assert(m_matches.size() == expected);
 			return std::move(*this);
 		}

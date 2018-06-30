@@ -19,14 +19,11 @@ namespace Lua
     void RegisterFunction(const char *name, lua_CFunction fn);
     bool RunFile(const char *path);
 
-    bool TriggerEvent(const char *name, char *data, size_t data_size);
+ //   bool TriggerEvent(const char *name, char *data, size_t data_size);
 }
 
 class CScriptSystem
 {
-    char pad[0x38];
-    __int64* lua_state;
-    
 public:
 
     bool ExecuteString(const char*, bool);

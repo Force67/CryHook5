@@ -12,7 +12,7 @@
 
 #include <CryHook5.h>
 
-static CScriptSystem* g_ScriptSystem;
+static CScriptSystem** g_ScriptSystem;
 
 // lua script system stuff
 static lua_State*(*GetCurrentLuaState)();
@@ -27,7 +27,7 @@ static void (*lua_pushclosure)(lua_State*, lua_CFunction, int32_t);
 
 CScriptSystem* CScriptSystem::GetInstance()
 {
-    return g_ScriptSystem;
+    return *g_ScriptSystem;
 }
 
 bool CScriptSystem::ExecuteString(const char* code, bool raw)
@@ -85,7 +85,7 @@ bool Lua::RunFile(const char* path)
 #endif
 
     //bool result = !CScriptSystem_ExecuteFile(g_ScriptSystem, data.get(), length, nullptr, false);
-    bool result = !CScriptSystem_ExecuteString(g_ScriptSystem, data.get(), false);
+    bool result = !CScriptSystem_ExecuteString(*g_ScriptSystem, data.get(), false);
 
 #if 0
     if (!result)
@@ -113,17 +113,38 @@ static void BuildErrorString(char* ptr)
 
 static nomad::base_function init([]()
 {
-    auto loc = nio::pattern("84 C0 74 0B B8 ? ? ? ? 87 05 ? ? ? ? 0F B6 8F").first(0xCC);
-    g_ScriptSystem = *(CScriptSystem**)((loc + 3) + *(int32_t*)(loc + 3) + 4);
-    nio::set_call(&CScriptSystem_ExecuteString, loc + 0x1D);
+    char *loc = nullptr;
 
-    loc -= (0xC4 + 0xCC);
+    auto matches = nio::pattern("89 70 30 48 8B 0D");
 
-    loc = nio::get_call(loc);
+    if (matches.size() > 0)
+    {
+        loc = matches.first(3);
 
-    nio::set_call(&GetCurrentLuaState, loc + 0x3A);
-    nio::set_call(&lua_pushclosure, loc + 0x73);
-    nio::set_call(&LuaSetFieldWrap, loc + 0x87);
+        g_ScriptSystem = (CScriptSystem**)((loc + 3) + *(int32_t*)(loc + 3) + 4);
+        nio::set_call(&CScriptSystem_ExecuteString, loc + 0x1D);
+
+        loc = nio::get_call(nio::pattern("57 48 83 EC 20 48 8B F9 E8 ? ? ? ? 33 D2 8D 4A 28").first(8));
+
+        nio::set_call(&GetCurrentLuaState, loc + 0x3A);
+        nio::set_call(&lua_pushclosure, loc + 0x73);
+        nio::set_call(&LuaSetFieldWrap, loc + 0x87);
+    }
+    else
+    {
+        loc = nio::pattern("84 C0 74 0B B8 ? ? ? ? 87 05 ? ? ? ? 0F B6 8F").first(0xCC);
+
+        g_ScriptSystem = (CScriptSystem**)((loc + 3) + *(int32_t*)(loc + 3) + 4);
+        nio::set_call(&CScriptSystem_ExecuteString, loc + 0x1D);
+
+        loc -= 0xC4 + 0xCC;
+
+        loc = nio::get_call(loc);
+
+        nio::set_call(&GetCurrentLuaState, loc + 0x3A);
+        nio::set_call(&lua_pushclosure, loc + 0x73);
+        nio::set_call(&LuaSetFieldWrap, loc + 0x87);
+    }
 
     loc = nio::pattern("0F B6 F8 48 85 D2 74 27").first(-9);
 

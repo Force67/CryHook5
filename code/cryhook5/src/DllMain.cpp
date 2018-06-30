@@ -71,7 +71,7 @@ BOOL WINAPI DllMain(
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
-        MessageBoxA(0, "break!", 0, 0);
+        //MessageBoxA(0, "break!", 0, 0);
 
         // need thread context to call d3d create
         CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)CH_Thread, hinstDLL, NULL, NULL);

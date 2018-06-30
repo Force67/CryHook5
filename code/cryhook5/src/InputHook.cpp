@@ -107,12 +107,22 @@ static LRESULT GameWndProc_Hook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 static nomad::base_function init([]()
 {
+    char *loc = nullptr;
 
-    auto loc = nio::pattern("31 D2 48 8D 4C 24 ? 44 8D 42 50").first(16 + 3);
+    auto matches = nio::pattern("31 D2 48 8D 4C 24 ? 44 8D 42 50");
+
+    if (matches.size() > 0)
+    {
+        loc = matches.first(16 + 3);
+    }
+    else
+    {
+        loc = nio::pattern("FF 15 ? ? ? ? 48 8B D8 33 D2").first(25 + 3);
+    }
 
     // as it gets put into rax
     GameWndProc_Orig = (WNDPROC)(loc + *(int32_t*)loc + 4);
-    *(int32_t*)loc = (intptr_t)(nio::AllocateFunctionStub(GameWndProc_Hook)) - (intptr_t)loc - 4;
+    nio::writeVP<int32_t>(loc, (intptr_t)(nio::AllocateFunctionStub(GameWndProc_Hook)) - (intptr_t)loc - 4);
 
     // cmouse stuff
     loc = nio::pattern("C6 80 ? ? ? ? ? 48 8B 8B ? ? ? ? 48 85 C9 74 17").first(-4);
