@@ -48,7 +48,7 @@ DWORD WINAPI CH_Thread(LPVOID lpParam)
 {
     auto base = GetModuleHandle(L"FC_m64.dll");
 
-    OpenConsole();
+    //OpenConsole();
     MH_Initialize();
     nio::set_base((uintptr_t)base);
 
@@ -71,10 +71,10 @@ BOOL WINAPI DllMain(
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
-        //MessageBoxA(0, "break!", 0, 0);
+//        MessageBoxA(0, "break!", 0, 0);
 
         // need thread context to call d3d create
-        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)CH_Thread, hinstDLL, NULL, NULL);
+        CreateThread(nullptr, NULL, (LPTHREAD_START_ROUTINE)CH_Thread, hinstDLL, NULL, nullptr);
         return true;
     }
 

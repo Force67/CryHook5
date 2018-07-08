@@ -18,15 +18,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 
 static WNDPROC GameWndProc_Orig;
 
-class CMouseStuff
-{
-public:
-
-    char pad[0x3D9];
-    bool bDisableTracking;
-};
-
-static CMouseStuff **g_mousestuff;
+//#define MOUSE_TEST
 
 static LRESULT GameWndProc_Hook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -35,15 +27,12 @@ static LRESULT GameWndProc_Hook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         if (wParam == VK_F8)
         {
             input::g_showmenu = !input::g_showmenu;
-            if (*g_mousestuff) (*g_mousestuff)->bDisableTracking = input::g_showmenu;
-        }
-        else
-        {
-            int32_t copy = (int32_t)wParam;
-          //  Lua::TriggerEvent("OnInput", (char*)copy, 4);
+
+#ifdef MOUSE_TEST
+            ImGui::GetIO().MouseDrawCursor = input::g_showmenu;
+#endif
         }
     }
-
 
     if (input::g_showmenu)
     {
@@ -105,6 +94,36 @@ static LRESULT GameWndProc_Hook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     return CallWindowProc(GameWndProc_Orig, hwnd, msg, wParam, lParam);
 }
 
+BOOL SetCursorPos_Hook(int X,int Y)
+{
+    if (!input::g_showmenu)
+    {
+        return SetCursorPos(X, Y);
+    }
+
+    return TRUE;
+}
+
+static void(*SetCursorPos_1_Orig)(__int64*, __int64*);
+static void(*SetCursorPos_2_Orig)(__int64*);
+
+static void SetCursorPos_Wrap_1(__int64 *a1, __int64 *a2)
+{
+    if (!input::g_showmenu)
+    {
+        return SetCursorPos_1_Orig(a1, a2);
+    }
+}
+
+static void SetCursorPos_Wrap_2(__int64 *a1)
+{
+    if (!input::g_showmenu)
+    {
+        return SetCursorPos_2_Orig(a1);
+    }
+}
+
+#if 1
 static nomad::base_function init([]()
 {
     char *loc = nullptr;
@@ -124,9 +143,15 @@ static nomad::base_function init([]()
     GameWndProc_Orig = (WNDPROC)(loc + *(int32_t*)loc + 4);
     nio::writeVP<int32_t>(loc, (intptr_t)(nio::AllocateFunctionStub(GameWndProc_Hook)) - (intptr_t)loc - 4);
 
-    // cmouse stuff
-    loc = nio::pattern("C6 80 ? ? ? ? ? 48 8B 8B ? ? ? ? 48 85 C9 74 17").first(-4);
-    g_mousestuff = (CMouseStuff**)(loc + *(int32_t*)loc + 4);
+#if MOUSE_TEST
+    nio::set_call(&SetCursorPos_1_Orig, 0x18319DB98);
+    nio::set_call(&SetCursorPos_2_Orig, 0x18319DBB0);
+
+    nio::put_call(0x18319DB98, SetCursorPos_Wrap_1);
+    nio::put_call(0x18319DBB0, SetCursorPos_Wrap_2);
+#endif
+
+    //nio::iat("user32.dll", SetCursorPos_Hook, "SetCursorPos");
 
     //nio::return_function(0x1870C7D50);
   //  nio::put_ljump(0x18B8C3790, BP);
@@ -143,3 +168,4 @@ static nomad::base_function init([]()
  //   nio::nop(0x182FC8766, 6);
  //   nio::put_call(0x182FC8766, SetCursor_Hook);
 });
+#endif

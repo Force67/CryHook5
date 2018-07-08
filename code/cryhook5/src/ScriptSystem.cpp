@@ -70,12 +70,10 @@ bool Lua::RunFile(const char* path)
     auto length = ftell(fh);
     fseek(fh, 0, SEEK_SET);
 
-    std::unique_ptr<char[]> data(new char[length + 1]);
+    auto data = std::make_unique<char[]>(length + 1);
     data[length] = 0;
     fread(data.get(), 1, length, fh);
     fclose(fh);
-
-//    while (*xd )
 
 #if 0
     // dev, dont clear stack top
@@ -84,8 +82,8 @@ bool Lua::RunFile(const char* path)
     nio::nop(0x18627CC35, 5);
 #endif
 
-    //bool result = !CScriptSystem_ExecuteFile(g_ScriptSystem, data.get(), length, nullptr, false);
-    bool result = !CScriptSystem_ExecuteString(*g_ScriptSystem, data.get(), false);
+    bool result = !CScriptSystem_ExecuteFile(*g_ScriptSystem, data.get(), length, nullptr, false);
+    //bool result = !CScriptSystem_ExecuteString(*g_ScriptSystem, data.get(), false);
 
 #if 0
     if (!result)
@@ -125,10 +123,6 @@ static nomad::base_function init([]()
         nio::set_call(&CScriptSystem_ExecuteString, loc + 0x1D);
 
         loc = nio::get_call(nio::pattern("57 48 83 EC 20 48 8B F9 E8 ? ? ? ? 33 D2 8D 4A 28").first(8));
-
-        nio::set_call(&GetCurrentLuaState, loc + 0x3A);
-        nio::set_call(&lua_pushclosure, loc + 0x73);
-        nio::set_call(&LuaSetFieldWrap, loc + 0x87);
     }
     else
     {
@@ -140,11 +134,11 @@ static nomad::base_function init([]()
         loc -= 0xC4 + 0xCC;
 
         loc = nio::get_call(loc);
-
-        nio::set_call(&GetCurrentLuaState, loc + 0x3A);
-        nio::set_call(&lua_pushclosure, loc + 0x73);
-        nio::set_call(&LuaSetFieldWrap, loc + 0x87);
     }
+
+    nio::set_call(&GetCurrentLuaState, loc + 0x3A);
+    nio::set_call(&lua_pushclosure, loc + 0x73);
+    nio::set_call(&LuaSetFieldWrap, loc + 0x87);
 
     loc = nio::pattern("0F B6 F8 48 85 D2 74 27").first(-9);
 

@@ -52,7 +52,7 @@ namespace gui
         // blur ? https://github.com/ocornut/imgui/issues/1117
 
         ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("CryHook5 1.0 by Force67", &g_open, 0);
+        ImGui::Begin("CryHook5 1.1 by Force67", &g_open, 0);
 
         ImGui::BeginTabBar("Lua#left_tabs_bar");
         ImGui::DrawTabsBackground();
