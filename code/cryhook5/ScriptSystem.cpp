@@ -59,10 +59,10 @@ void Lua::RegisterFunction(const char* name, lua_CFunction fn)
     LuaSetFieldWrap(state, /*0xFFFFFFFE*/ 0xFFFFFFFE, name);
 }
 
-bool Lua::RunFile(const char* path)
+bool Lua::RunFile(const wchar_t* path)
 {
     FILE* fh = nullptr;
-    fopen_s(&fh, path, "rb");
+    _wfopen_s(&fh, path, L"rb");
 
     if (!fh) return false;
 
@@ -153,8 +153,4 @@ static nomad::base_function init([]()
     loc = (char*)CScriptSystem_RaiseError + 0x2E2;
 
     nio::put_call(loc, BuildErrorString);
-
-    // and we want to ensure the script dir presence too
-    auto folder = (Utility::GetAbsolutePathW() + L"scripts").c_str();
-    if (GetFileAttributesW(folder) == INVALID_FILE_ATTRIBUTES) CreateDirectoryW(folder, nullptr);
 });

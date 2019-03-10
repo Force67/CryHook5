@@ -17,7 +17,7 @@ namespace Lua
     lua_State *GetCurrentLuaState();
 
     void RegisterFunction(const char *name, lua_CFunction fn);
-    bool RunFile(const char *path);
+    bool RunFile(const wchar_t *path);
 
  //   bool TriggerEvent(const char *name, char *data, size_t data_size);
 }

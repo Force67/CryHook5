@@ -4,6 +4,6 @@
 
 namespace Utility
 {
-    std::wstring &GetAbsolutePathW();
-    std::string &GetAbsolutePathA();
+	std::wstring MakeAbsolutePathW(const std::wstring &rel_to);
+	std::string MakeAbsolutePathA(const std::string &rel_to);
 }

@@ -1,8 +1,11 @@
 
 /*
-*  This source file is part of the Far Cry 5 ScriptHook by Force67
-*  More information regarding licensing can be found in LICENSE.md
-*/
+ * Copyright (C) Force67
+ * Licensing information can be found in LICENSE.md
+ * This file is part of CryHook5
+ * Author: Force67
+ * Started: 2019-03-07
+ */
 
 #include <Hooking.h>
 #include <Nomad/nomad_base_function.h>
@@ -15,8 +18,7 @@
 #include <imgui.h>
 
 #include <CryHook5.h>
-
-#include <Jitasm.h>
+#include <Menu.h>
 
 struct D3D_Class_Legacy
 {
@@ -63,9 +65,9 @@ static HRESULT D3D11Present_Hook(IDXGISwapChain *self, UINT syncinterval, UINT f
 {
     ImGui_ImplDX11_NewFrame();
 
-    // draw gui
-    if (input::g_showmenu) gui::RenderMenus();
-    gui::RenderGenerics();
+	// draw gui
+	if (g_MenuActive)
+		g_Menu->Draw();
 
     // process render tasks
     ImGui::Render();
@@ -81,8 +83,8 @@ static HRESULT D3D11Present_Wrap(int64_t* Device3D, int64_t* a2, int64_t* a3)
     ImGui_ImplDX11_NewFrame();
 
     // draw gui
-    if (input::g_showmenu) gui::RenderMenus();
-    gui::RenderGenerics();
+	if (g_MenuActive)
+		g_Menu->Draw();
 
     // process render tasks
     ImGui::Render();

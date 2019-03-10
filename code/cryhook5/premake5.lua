@@ -19,6 +19,7 @@ project "CryHook5"
 		--"../vendor/lua",
 		"../vendor/minhook",
 		"../vendor/imgui",
+		"."
 	}
 
 	links
