@@ -1,7 +1,6 @@
 project "CryHook5"
     language "C++"
     kind "SharedLib"
-	targetextension ".asi"
     
     vpaths
     {

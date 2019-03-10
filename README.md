@@ -11,5 +11,5 @@ Requirements:
 
 Run pmake.cmd
 
-Simply build and drop CryHook5.asi alongside the asi-loader in your game directory.
+Simply build and drop CryHook5.dll alongside the asi-loader in your game directory.
 

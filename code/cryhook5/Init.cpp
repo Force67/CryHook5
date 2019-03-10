@@ -16,11 +16,11 @@
 
 bool IsGameGenuine()
 {
-	char *code = (char*)LoadLibraryW(L"uplay_r1_loader64.dll") + 0x3D727;
+	char *code = (char*)LoadLibraryW(L"uplay_r1_loader64.dll") + 0x9F0D;
 
 	DWORD oldProtect;
 	VirtualProtect(code, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
-	bool result = *(BYTE*)code == 0x83;
+	bool result = *(BYTE*)code == 0x48;
 	VirtualProtect(code, 1, oldProtect, nullptr);
 
 	return result;
@@ -31,7 +31,7 @@ bool CheckViability()
 	// TODO: query module directory
 	if (!GetModuleHandle(L"dinput8.dll"))
 	{
-		MessageBoxW(nullptr, L"CryHook5 does not support beeing injected.", L"DawnHook", MB_ICONWARNING);
+		MessageBoxW(nullptr, L"CryHook5 does not support beeing injected.", L"CryHook5", MB_ICONWARNING);
 		return false;
 	}
 
